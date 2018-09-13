@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import './App.css';
-import Person from './Person/Person'
+import Person from './Person/Person';
 
 class App extends Component {
 
@@ -14,14 +14,21 @@ class App extends Component {
     showPersons: false
   }
 
-  nameChangeHandler = (event) => {
-    this.setState({
-      persons: [
-        { name: 'Max', age: 28 },
-        { name: event.target.value, age: 29 },
-        { name: 'Stephanie', age: 26 }
-      ] 
-    })
+  nameChangeHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+
+    person.name = event.target.value;
+
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+    this.setState( { persons: persons } );
   }
 
   togglePersonsHandler = () => {
@@ -37,11 +44,12 @@ class App extends Component {
 
   render() {
     const style = {
-       backgroundColor: 'white',
-       font: 'inherit',
-       border: '1px solid blue',
-       padding: '8px',
-       cursor: 'pointer'
+      backgroundColor: 'green',
+      color: 'white',
+      font: 'inherit',
+      border: '1px solid blue',
+      padding: '8px',
+      cursor: 'pointer'
     };
 
     let persons = null;
@@ -54,16 +62,28 @@ class App extends Component {
               click={() => this.deletePersonHandler(index)}
               name={person.name}
               age={person.age}
-              key={person.id} />
+              key={person.id}
+              changed={(event) => this.nameChangeHandler(event, person.id)} />
           })}          
         </div>
       );
+
+      style.backgroundColor = 'red';
     }
 
+    let classes = [];
+
+    if(this.state.persons.length <= 2) {
+      classes.push('red');
+    }
+    if(this.state.persons.length <=1) {
+      classes.push('bold');
+    }
+    
     return (
       <div className="App">
         <h1>Hi, this is a react app</h1>
-        <p>This is really working!</p>
+        <p className={classes.join(' ')}>This is really working!</p>
         <button 
           style={style}
           onClick={this.togglePersonsHandler}>Toggle Persons</button>
